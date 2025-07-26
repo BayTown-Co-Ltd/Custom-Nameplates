@@ -1,38 +1,38 @@
-name: Build CustomNameplates Plugin
+name: 构建 CustomNameplates 插件
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-  workflow_dispatch:   # 支持手动触发
+      - main   # 当 main 分支有推送时触发
+  pull_request:  # 当有拉取请求时触发
+  workflow_dispatch:   # 支持手动触发（在 Actions 里点按钮启动）
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # 使用最新的 Ubuntu 运行环境
 
     strategy:
       matrix:
-        java-version: [17, 21]
+        java-version: [17, 21]   # 针对 JDK 17 和 21 两个版本构建
 
     steps:
-      - name: Checkout code
+      - name: 签出代码
         uses: actions/checkout@v3
 
-      - name: Set up JDK ${{ matrix.java-version }}
+      - name: 设置 JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
 
-      - name: Grant execute permission for gradlew
+      - name: 赋予 gradlew 执行权限
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle
+      - name: 使用 Gradle 构建项目
         run: ./gradlew build
 
-      - name: Upload build artifact
+      - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: customnameplates-artifact-jdk${{ matrix.java-version }}
-          path: target/*.jar   # 根据你的实际产物路径调整，如果是 build/libs/*.jar 请改这里
+          path: target/*.jar   # 这里是产物路径，根据你的实际路径修改
