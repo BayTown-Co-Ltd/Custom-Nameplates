@@ -1,0 +1,38 @@
+name: Build CustomNameplates Plugin
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:   # 这行就是支持手动触发的魔法~
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java-version: [17, 21]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: customnameplates-artifact-jdk${{ matrix.java-version }}
+          path: target/*.jar  # 按你的实际目录修改~
